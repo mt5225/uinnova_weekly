@@ -144,7 +144,7 @@ def get_downloads():
                    key_filename='/Users/mt5225/pem/website_en.pem')
     downloads = {}
     for datestr in getLastSevenDays():
-        stdin, stdout, stderr = client.exec_command('grep uBuilder-v1.2.1.153-en.exe  /var/log/nginx//access.*|grep "' + datestr +'" | wc -l')
+        stdin, stdout, stderr = client.exec_command('grep mmd-v1.2.1.420-en.exe  /var/log/nginx//access.*|grep "' + datestr +'" | wc -l')
         downloads[datestr] = int(stdout.readline())
     client.close()
     return downloads
