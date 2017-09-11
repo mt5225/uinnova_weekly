@@ -7,24 +7,6 @@ import glob
 from jinja2 import Environment, FileSystemLoader
 import paramiko
 
-
-def save_img_to_disk():
-    ''' Save image to local disk
-    '''
-    from selenium import webdriver
-    profile = webdriver.FirefoxProfile()
-    profile.set_preference('browser.download.folderList', 2)  # custom location
-    profile.set_preference('browser.download.manager.showWhenStarting', False)
-    profile.set_preference('browser.download.dir',
-                           '/Users/mt5225/Projects/uinnova/weekly/.')
-    profile.set_preference(
-        'browser.helperApps.neverAsk.saveToDisk', 'image/png')
-    driver = webdriver.Firefox(firefox_profile=profile)
-    driver.get("file:////Users/mt5225/Projects/uinnova/weekly/temp-plot.html")
-    sleep(2)
-    driver.quit()
-
-
 def cleanup():
     ''' Clean old file
     '''
@@ -142,7 +124,6 @@ def move_to_desktop(pdf_filename):
 def main():
     ''' Main entry
     '''
-
     # init
     cleanup()
     file_list = ['summary.csv', 'user_weekcount.csv',
@@ -161,8 +142,6 @@ def main():
     # generate pdf
     generate_pdf(pdf_filename, weekday)
     move_to_desktop(pdf_filename)
-
-    # send_email('uDCB_Weekly_Report.pdf')
 
 if __name__ == "__main__":
     main()
