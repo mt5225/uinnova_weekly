@@ -4,11 +4,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import glob
-import plotly.graph_objs as go
-import plotly.offline as offline
 from jinja2 import Environment, FileSystemLoader
 import paramiko
-
 
 
 def save_img_to_disk():
@@ -42,41 +39,27 @@ def cleanup():
 def generate_download_chart(downloads):
     ''' generate download chart
     '''
-    download_data = pd.DataFrame(downloads.items())
-    data = [go.Bar(x=download_data.iloc[:, 0], y=download_data.iloc[:, 1])]
-    offline.plot({'data': data,
-                  'layout': {'title': 'Total Download Last Week: ' + str(sum(downloads.values())),
-                             'font': dict(size=10)
-                            }},
-                 image='png',
-                 output_type='file',
-                 auto_open=False,
-                 image_filename='downloads')
-    save_img_to_disk()
+    df = pd.DataFrame(downloads.items(),columns=['Date', 'Downloads'])
+    df['WeekDay'] = ['Sun', 'Mon', 'Tue', 'Web', 'Thur', 'Fri', 'Sat']
+    title = "total downloads last week = " + str(df['Downloads'].sum())
+    ax = df.plot(kind='bar', x= 'WeekDay' , y='Downloads', title = title, fontsize=6, rot=0)
+    for p in ax.patches:
+        ax.annotate(str(int(p.get_height())), xy=(p.get_x() + 0.2, p.get_height() + 0.2))
+    fig = ax.get_figure()
+    fig.savefig('downloads.png')
 
 def generate_image(img_name):
     ''' Generate uDCB statistics image
     '''
-    # generate weekly user count chart
-    df_user = pd.read_csv("./data/" + img_name + '.csv',  header=None)
+    column_names = ['date','value']
+    df = pd.read_csv("./data/" + img_name + '.csv',  header=None, names = column_names)
     if(img_name == 'top10_user'):
-        data = [
-            go.Bar(x=df_user.iloc[:, 0], y=df_user.iloc[:, 1])
-        ]
+        img_type = 'bar'
     else:
-        data = [
-            go.Scatter(x=df_user.iloc[:, 0], y=df_user.iloc[:, 1])
-        ]
-
-    offline.plot({'data': data,
-                  'layout': {'title': '',
-                             'font': dict(size=10)
-                            }},
-                 image='png',
-                 output_type='file',
-                 auto_open=False,
-                 image_filename=img_name)
-    save_img_to_disk()
+        img_type = 'line'
+    ax = df.plot(kind=img_type, x='date', y='value', title = img_name, rot=-45, fontsize=6)
+    fig = ax.get_figure()
+    fig.savefig(img_name + '.png')
 
 
 def generate_pdf(pdf_filename, weekday):
@@ -180,7 +163,6 @@ def main():
     move_to_desktop(pdf_filename)
 
     # send_email('uDCB_Weekly_Report.pdf')
-
 
 if __name__ == "__main__":
     main()
