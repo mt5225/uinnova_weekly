@@ -12,6 +12,7 @@ def cleanup():
     '''
     try:
         map(os.remove, glob.glob("*.png"))
+        map(os.remove, glob.glob("./data/*.csv"))
         os.remove('report.pdf')
         os.remove('out.html')
     except OSError:
@@ -96,7 +97,7 @@ def run_stat_on_server():
     client.connect('52.27.170.134',
                    username='ubuntu',
                    key_filename='/Users/mt5225/pem/website_en.pem')
-    client.exec_command('/home/ubuntu/scripts/weeklyreport2.sh');
+    client.exec_command('/bin/sh /home/ubuntu/scripts/weeklyreport2.sh');
     client.close();
 
 def get_downloads():
